@@ -1,0 +1,42 @@
+# build output
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.mdb
+*.idb
+*.scc
+*.cache
+*.log
+
+# IDE generated files
+.vscode/
+cmake-build-*/
+.idea/
+*.iml
+.history/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+*.iml
+out/
+*.sublime-workspace
+*.sublime-project
+.zed/
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+*~
+.nfs*
