@@ -17,7 +17,10 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-macos'">
     <None Include="native/osx/*.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>native/osx/%(Filename)%(Extension)</Link>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="Fmod/lib/macos/*.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
   </ItemGroup>
@@ -25,17 +28,52 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <None Include="native/lib64/*.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="Fmod/lib/linux/x86_64/*.so*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="Fmod/lib/linux/arm64/*.so*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <None Include="native/x64/*.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
     <None Include="native/x86/*.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="Fmod/lib/win/x64/*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="Fmod/lib/win/arm64/*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
   </ItemGroup>
 
-</Project>
+  <Target Name="CopyNativeLibs" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0-macos'">
+    <ItemGroup>
+      <NativeLibs Include="native/osx/*.dylib" />
+      <NativeLibs Include="Fmod/lib/macos/*.dylib" />
+    </ItemGroup>
+    <Copy SourceFiles="@(NativeLibs)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
 
+  <Target Name="BundleNativeLibs" AfterTargets="Publish" Condition="'$(TargetFramework)' == 'net8.0-macos'">
+    <ItemGroup>
+      <NativeLibs Include="$(PublishDir)*.dylib" />
+    </ItemGroup>
+    <MakeDir Directories="$(PublishDir)Game.app/Contents/Frameworks" />
+    <Copy SourceFiles="@(NativeLibs)" DestinationFolder="$(PublishDir)Game.app/Contents/Frameworks" SkipUnchangedFiles="true" />
+    <Exec Command="install_name_tool -add_rpath @executable_path/../Frameworks $(PublishDir)Game.app/Contents/MacOS/Game" />
+  </Target>
+
+</Project>

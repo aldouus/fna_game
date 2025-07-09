@@ -39,3 +39,9 @@ $RECYCLE.BIN/
 
 *~
 .nfs*
+
+fmod/game/.cache
+fmod/game/.unsaved
+fmod/game/.user
+fmod/game/Build
+fmod/game/Metadata
