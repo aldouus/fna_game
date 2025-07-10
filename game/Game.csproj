@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0-macos;net8.0;net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,7 +14,7 @@
     <ProjectReference Include="..\..\..\FNA\FNA.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-macos'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <None Include="native/osx/*.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
@@ -23,9 +23,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <None Include="native/lib64/*.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
@@ -59,7 +56,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="CopyNativeLibs" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0-macos'">
+  <Target Name="CopyNativeLibs" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
     <ItemGroup>
       <NativeLibs Include="native/osx/*.dylib" />
       <NativeLibs Include="Fmod/lib/macos/*.dylib" />
@@ -67,13 +64,9 @@
     <Copy SourceFiles="@(NativeLibs)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
 
-  <Target Name="BundleNativeLibs" AfterTargets="Publish" Condition="'$(TargetFramework)' == 'net8.0-macos'">
-    <ItemGroup>
-      <NativeLibs Include="$(PublishDir)*.dylib" />
-    </ItemGroup>
-    <MakeDir Directories="$(PublishDir)Game.app/Contents/Frameworks" />
-    <Copy SourceFiles="@(NativeLibs)" DestinationFolder="$(PublishDir)Game.app/Contents/Frameworks" SkipUnchangedFiles="true" />
-    <Exec Command="install_name_tool -add_rpath @executable_path/../Frameworks $(PublishDir)Game.app/Contents/MacOS/Game" />
+  <Target Name="SetRPath" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
+    <Exec Command="install_name_tool -add_rpath @executable_path $(OutputPath)libfmodstudio.dylib" IgnoreExitCode="true" />
+    <Exec Command="install_name_tool -change @rpath/libfmod.dylib @executable_path/libfmod.dylib $(OutputPath)libfmodstudio.dylib" IgnoreExitCode="true" />
   </Target>
 
 </Project>
