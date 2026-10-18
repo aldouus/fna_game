@@ -19,19 +19,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
-    <None Include="Fmod/lib/macos/*.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
-    </None>
     <None Include="native/lib64/*.so">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
-    </None>
-    <None Include="Fmod/lib/linux/x86_64/*.so*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
-    </None>
-    <None Include="Fmod/lib/linux/arm64/*.so*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
@@ -46,27 +34,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </None>
-    <None Include="Fmod/lib/win/x64/*.dll">
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SoLoudSharp" Version="0.3.1" ExcludeAssets="native" />
+    <None Include="Content/Audio/tung.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
-    </None>
-    <None Include="Fmod/lib/win/arm64/*.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
+      <TargetPath>Content/Audio/tung.wav</TargetPath>
     </None>
   </ItemGroup>
 
   <Target Name="CopyNativeLibs" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
     <ItemGroup>
       <NativeLibs Include="native/osx/*.dylib" />
-      <NativeLibs Include="Fmod/lib/macos/*.dylib" />
     </ItemGroup>
     <Copy SourceFiles="@(NativeLibs)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
-  </Target>
-
-  <Target Name="SetRPath" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
-    <Exec Command="install_name_tool -add_rpath @executable_path $(OutputPath)libfmodstudio.dylib" IgnoreExitCode="true" />
-    <Exec Command="install_name_tool -change @rpath/libfmod.dylib @executable_path/libfmod.dylib $(OutputPath)libfmodstudio.dylib" IgnoreExitCode="true" />
   </Target>
 
 </Project>
