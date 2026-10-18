@@ -17,10 +17,8 @@ public class Game1 : Game
     private Texture2D _stoneTexture;
     private Texture2D _bedRockTexture;
 
-    private FMOD.Studio.System _studioSystem;
-    private FMOD.System _coreSystem;
-    private FMOD.Studio.Bank _masterBank;
-    private FMOD.Studio.Bank _stringsBank;
+    private GameAudio _audio = null!;
+    private bool _testPressedLastFrame;
 
     public Game1()
     {
@@ -35,28 +33,7 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        FMOD.Studio.System.create(out _studioSystem);
-        _studioSystem.getCoreSystem(out _coreSystem);
-        _coreSystem.setDSPBufferSize(256, 4);
-
-        _studioSystem.initialize(
-            128,
-            FMOD.Studio.INITFLAGS.NORMAL,
-            FMOD.INITFLAGS.NORMAL,
-            IntPtr.Zero
-        );
-
-        _studioSystem.loadBankFile(
-            "Content/Audio/Master.bank",
-            FMOD.Studio.LOAD_BANK_FLAGS.NORMAL,
-            out _masterBank
-        );
-
-        _studioSystem.loadBankFile(
-            "Content/Audio/Master.string.bank",
-            FMOD.Studio.LOAD_BANK_FLAGS.NORMAL,
-            out _stringsBank
-        );
+        _audio = new GameAudio(GameAudio.FindTestWav());
 
         base.Initialize();
 
@@ -142,28 +119,17 @@ public class Game1 : Game
             Exit();
         }
 
-        if (state.IsKeyDown(Keys.T))
-        {
-            FMOD.Studio.EventDescription eventDescription;
-            var result = _studioSystem.getEvent("event:/test", out eventDescription);
-            if (result == FMOD.RESULT.OK)
-            {
-                FMOD.Studio.EventInstance instance;
-                eventDescription.createInstance(out instance);
-                instance.start();
-                instance.release();
-            }
-        }
+        var testDown = state.IsKeyDown(Keys.T);
+        if (testDown && !_testPressedLastFrame)
+            _audio.PlayTest();
+        _testPressedLastFrame = testDown;
 
-        _studioSystem.update();
         base.Update(gameTime);
     }
 
     protected override void UnloadContent()
     {
-        _stringsBank.unload();
-        _masterBank.unload();
-        _studioSystem.release();
+        _audio.Dispose();
 
         base.UnloadContent();
     }
