@@ -167,7 +167,6 @@ public class Game1 : Game
         int maxRange = 3;
 
         int dx = Math.Abs(tileX - playerTileX);
-        int dy = Math.Abs(tileY - playerTileY);
 
         if (dx > maxRange)
             return;

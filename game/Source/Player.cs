@@ -7,7 +7,6 @@ public class Player
     public float Width = 24f;
     public float Height = 56f;
     public bool OnGround = false;
-    public bool WantsToJump = false;
 
     public Rectangle BoundingBox =>
         new(
